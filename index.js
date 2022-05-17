@@ -10,6 +10,7 @@ const bot = linebot({
 
 bot.on('message', (e) => {
   dat.getData(e)
+  console.log('in')
 })
 bot.listen('/', process.env.PORT || 3000, () => {
   console.log('bot on')
