@@ -25,14 +25,13 @@ const getData = async function (e) {
       place = place.slice(0, place.length - 1)
       // 輸出錯誤*******************************************************************************************************
       const link = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=${key}&locationId=${place}&elementName=WeatherDescription`
-      const { d } = await axios.get(link)
-      hugeList.push(d)
+      const { data } = await axios.get(link)
+      hugeList.push(data)
     }
-    fs.writeFileSync('hugeList.json', JSON.stringify(hugeList))
     // 抓取縣市名
     // const bigArea = data.records.locations[0].locationsName
     // 將鄉鎮資料取陣列
-    const areasOrigin = hugeList[0].records.locations
+    // fs.writeFileSync('hugeList.json', JSON.stringify(hugeList))
     // 下方area引用功能
     //  funmction:將時間擷取優化
     const listArrange = function (arr) {
@@ -44,6 +43,28 @@ const getData = async function (e) {
         return { time, value }
       })
       return out
+    }
+    //  funmction:拆分成天的資料
+    const weatherToDay = function (arr) {
+      const dayWeather = [{ day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }]
+      for (const t in arr) {
+        for (const d in dayWeather) {
+          if (dayWeather[d].day !== '') {
+            if (dayWeather[d].day === arr[t].time.slice(0, 10)) {
+              dayWeather[d].detail.push({ time: arr[t].time.slice(11, 13), value: arr[t].value })
+              break
+            }
+          } else {
+            dayWeather[d].day = arr[t].time.slice(0, 10)
+            dayWeather[d].detail.push({ time: arr[t].time.slice(11, 13), value: arr[t].value })
+            break
+          }
+        }
+      }
+      for (const d in dayWeather) {
+        dayWeather[d].summary = summaryText(dayWeather[d].detail)
+      }
+      return dayWeather
     }
     // function 將當每日資料整理成結論
     const summaryText = function (arr) {
@@ -117,12 +138,12 @@ const getData = async function (e) {
         case 3: {
           const chanceHigh = maxToMin(resultChance[1])
           reply[1].text = '全日可能下雨'
-          reply[1].chance = `機率${chanceHigh[0]}~${chanceHigh[1]}%`
+          reply[1].chance = chanceHigh[0] === chanceHigh[1] ? `機率${chanceHigh[0]}%` : `機率${chanceHigh[0]}~${chanceHigh[1]}%`
           break
         }
         case 2: {
           reply[1].text = `${resultChance[1][0].time}、${resultChance[1][1].time}可能下雨`
-          reply[1].chance = `機率${resultChance[1][0].value[1]}、${resultChance[1][1].value[1]}%`
+          reply[1].chance =  resultChance[1][0].value[1] === resultChance[1][1].value[1] ? `機率${resultChance[1][0].value[1]}%` : `機率${resultChance[1][0].value[1]}、${resultChance[1][1].value[1]}%`
           break
         }
         case 1: {
@@ -133,47 +154,31 @@ const getData = async function (e) {
       }
       return reply
     }
-    //  funmction:拆分成天的資料
-    const weatherToDay = function (arr) {
-      const dayWeather = [{ day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }]
-      for (const t in arr) {
-        for (const d in dayWeather) {
-          if (dayWeather[d].day !== '') {
-            if (dayWeather[d].day === arr[t].time.slice(0, 10)) {
-              dayWeather[d].detail.push({ time: arr[t].time.slice(11, 13), value: arr[t].value })
-              break
-            }
-          } else {
-            dayWeather[d].day = arr[t].time.slice(0, 10)
-            dayWeather[d].detail.push({ time: arr[t].time.slice(11, 13), value: arr[t].value })
-            break
-          }
-        }
-      }
-      for (const d in dayWeather) {
-        dayWeather[d].summary = summaryText(dayWeather[d].detail)
-      }
-      return dayWeather
-    }
+
     // ---抓取各縣市
     const areaList = []
-    for (const t in areasOrigin) {
-      const areasName = areasOrigin[t].locationsName
-      const areasInfo = areasOrigin[t].location.map(ar => {
-        // 只取出關鍵的鄉鎮名
-        const area = ar.locationName
-        // 取出時間天氣表(唯一有效資料)
-        const timeWeathersOrigin = ar.weatherElement[0].time
-        // 上方2function
-        const timeWeathers = listArrange(timeWeathersOrigin)
-        const dayWeather = weatherToDay(timeWeathers)
-        return { area, dayWeather }
-      })
-      areaList.push({ areasName, areasInfo })
+    for (const m in hugeList) {
+      const areasOrigin = hugeList[m].records.locations
+      for (const t in areasOrigin) {
+        const areasName = areasOrigin[t].locationsName
+        const areasInfo = areasOrigin[t].location.map(ar => {
+          // 只取出關鍵的鄉鎮名
+          const area = ar.locationName
+          // 取出時間天氣表(唯一有效資料)
+          const timeWeathersOrigin = ar.weatherElement[0].time
+          // 上方2function
+          const timeWeathers = listArrange(timeWeathersOrigin)
+          const dayWeather = weatherToDay(timeWeathers)
+          return { area, dayWeather }
+        })
+        areaList.push({ areasName, areasInfo })
+      }
     }
-    // 改村改第二個
     fs.writeFileSync('areaList.json', JSON.stringify(areaList))
-    fs.writeFileSync('t2.json', JSON.stringify(summaryText(areaList[0].areasInfo[0].dayWeather[0].detail)))
+
+    // 改村改第二個
+
+
 
     // const $ = cheerio.load(data)
     // const card = $('#general .col-md-3:first-child')
