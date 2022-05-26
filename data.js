@@ -136,6 +136,14 @@ const getData = async function (e) {
         areaList.push({ areasName, areasInfo })
       }
     }
+    const day = areaList[18].areasInfo[11].dayWeather
+    // const geyDays = function (arr) {
+    //   let out = []
+    //   for (const i in arr) {
+    //     arr[i].detail
+    //   }
+    // }
+
     fs.writeFileSync('areaList.json', JSON.stringify(areaList))
     e.reply(
       [{
