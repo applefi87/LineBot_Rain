@@ -2,11 +2,10 @@
 import axios from 'axios'
 // import { time } from 'console'
 // import cheerio from 'cheerio'
-// import template from './template.js'
 import 'dotenv/config'
 import fs from 'fs'
-import flexBody from './flex_body.js'
-import flexHead from './flex_head.js'
+import mode from './mode.js'
+import ar from './areaList.js'
 
 const key = process.env.WEATHER_KEY
 const getData = async function (e) {
@@ -28,10 +27,7 @@ const getData = async function (e) {
       const { data } = await axios.get(link)
       hugeList.push(data)
     }
-    // 抓取縣市名
-    // const bigArea = data.records.locations[0].locationsName
-    // 將鄉鎮資料取陣列
-    // fs.writeFileSync('hugeList.json', JSON.stringify(hugeList))
+
     // 下方area引用功能
     //  funmction:將時間擷取優化
     const listArrange = function (arr) {
@@ -46,7 +42,7 @@ const getData = async function (e) {
     }
     //  funmction:拆分成天的資料
     const weatherToDay = function (arr) {
-      const dayWeather = [{ day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }]
+      const dayWeather = [{ day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }, { day: '', summary: [], detail: [] }]
       for (const t in arr) {
         for (const d in dayWeather) {
           if (dayWeather[d].day !== '') {
@@ -105,14 +101,14 @@ const getData = async function (e) {
       // fs.writeFileSync('resultChance.json', JSON.stringify(resultChance))
       // 以下只是想到的一個算法 配合如何產出line三種尺寸的資料
       const change = function (ar) {
-        const o = ['', '']
+        let o = ''
         for (const i in ar) {
-          console.log(i)
           if (i > 1) {
-            o[i - 2] = ar[i].text === ar[i * 1 - 1].text ? 2 : 1
+            o += ar[i].text === ar[i * 1 - 1].text ? 2 : 1
           }
         }
-        return o === ['2', '2'] ? '333' : o === ['2', '1'] ? '221' : o === ['1', '2'] ? '122' : o === ['1', '1'] ? '111' : 'err'
+        // 怪怪的
+        return o === '22' ? '333' : o === '21' ? '221' : o === '12' ? '122' : o === '11' ? '111' : 'err'
       }
       return { result: resultChance, style: change(resultChance) }
     }
@@ -136,22 +132,19 @@ const getData = async function (e) {
         areaList.push({ areasName, areasInfo })
       }
     }
-    const day = areaList[18].areasInfo[11].dayWeather
-    // const geyDays = function (arr) {
-    //   let out = []
-    //   for (const i in arr) {
-    //     arr[i].detail
-    //   }
-    // }
-
-    fs.writeFileSync('areaList.json', JSON.stringify(areaList))
+    // 可成功抓單日+顯
+    const place = areaList[18].areasInfo[11].dayWeather
+    const test = mode.list(place)
+    // fs.writeFileSync('place.json', JSON.stringify(place))
+    // fs.writeFileSync('test.json', JSON.stringify(test))
+    // fs.writeFileSync('areaList.json', JSON.stringify(areaList))
     e.reply(
       [{
         type: 'flex',
         altText: '共通課程',
         contents: {
           type: 'carousel',
-          contents: [flexHead, flexBody, flexBody, flexBody]
+          contents: [test]
         }
       }]
     )
