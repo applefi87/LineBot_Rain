@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import linebot from 'linebot'
-import dat from './data.js'
+// import dat from './data.js'
+import dat from './test.js'
 
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,

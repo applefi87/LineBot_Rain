@@ -24,6 +24,7 @@ const getData = async function (e) {
         }
       }
       place = place.slice(0, place.length - 1)
+      // 輸出錯誤*******************************************************************************************************
       const link = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=${key}&locationId=${place}&elementName=WeatherDescription`
       const { data } = await axios.get(link)
       hugeList.push(data)
@@ -69,6 +70,7 @@ const getData = async function (e) {
     // function 將當每日資料整理成結論
     const summaryText = function (arr) {
       // 整理成凌晨 上午 下午 晚上 的口語預報
+      // ***************************目前只挑第二天***************
       const result = []
       for (const t in arr) {
         if (t % 2 === 0) {
@@ -76,8 +78,7 @@ const getData = async function (e) {
         }
       }
       // 依照降雨機率分類
-      const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
-      const resultChance = [[], [], [], []]
+      const resultChance = [[], [], []]
       for (const i in result) {
         const t = result[i].time
         let text = ''
@@ -90,31 +91,69 @@ const getData = async function (e) {
         } else if (t === '18') {
           text = '晚上'
         }
-        if (result[i].value[1] >= 80) {
-          resultChance[i] = { time: text, value: result[i].value, text: speak[0] }
-        } else if (result[i].value[1] >= 60) {
-          resultChance[i] = { time: text, value: result[i].value, text: speak[1] }
-        } else if (result[i].value[1] === 50) {
-          resultChance[i] = { time: text, value: result[i].value, text: speak[2] }
-        } else if (result[i].value[1] >= 30) {
-          resultChance[i] = { time: text, value: result[i].value, text: speak[3] }
-        } else if (result[i].value[1] >= 0) {
-          resultChance[i] = { time: text, value: result[i].value, text: speak[4] }
-        }
-      }
-      // fs.writeFileSync('resultChance.json', JSON.stringify(resultChance))
-      // 以下只是想到的一個算法 配合如何產出line三種尺寸的資料
-      const change = function (ar) {
-        const o = ['', '']
-        for (const i in ar) {
-          console.log(i)
-          if (i > 1) {
-            o[i - 2] = ar[i].text === ar[i * 1 - 1].text ? 2 : 1
+        if (t !== '00') {
+          if (result[i].value[1] >= 70) {
+            resultChance[0].push({ time: text, value: result[i].value })
+          } else if (result[i].value[1] >= 40) {
+            resultChance[1].push({ time: text, value: result[i].value })
           }
         }
-        return o === ['2', '2'] ? '333' : o === ['2', '1'] ? '221' : o === ['1', '2'] ? '122' : o === ['1', '1'] ? '111' : 'err'
       }
-      return { result: resultChance, style: change(resultChance) }
+      // 人性化回報
+      // 陣列內最大~最小值
+      const maxToMin = function (arr) {
+        let max = ''
+        let min = ''
+        for (const i in arr) {
+          if (max < arr[i].value[1] | max === '') {
+            max = arr[i].value[1]
+          }
+          if (min > arr[i].value[1] | min === '') {
+            min = arr[i].value[1]
+          }
+        }
+        return [min, max]
+      }
+      // 高降雨機率
+      const reply = [{ text: '', chance: '' }, { text: '', chance: '' }]
+      switch (resultChance[0].length) {
+        case 3: {
+          const chanceHigh = maxToMin(resultChance[0])
+          reply[0].text = '全日有雨'
+          reply[0].chance = chanceHigh[0] === chanceHigh[1] ? `機率${chanceHigh[0]}%` : `機率${chanceHigh[0]}~${chanceHigh[1]}%`
+          break
+        }
+        case 2: {
+          reply[0].text = `${resultChance[0][0].time}、${resultChance[0][1].time}有雨`
+          reply[0].chance = resultChance[0][0].value[1] === resultChance[0][1].value[1] ? `機率${resultChance[0][0].value[1]}%` : `機率${resultChance[0][0].value[1]}、${resultChance[0][1].value[1]}%`
+          break
+        }
+        case 1: {
+          reply[0].text = `${resultChance[0][0].time}有雨`
+          reply[0].chance = `機率${resultChance[0][0].value[1]}%`
+          break
+        }
+      }
+      // 可能降雨
+      switch (resultChance[1].length) {
+        case 3: {
+          const chanceHigh = maxToMin(resultChance[1])
+          reply[1].text = '全日可能下雨'
+          reply[1].chance = chanceHigh[0] === chanceHigh[1] ? `機率${chanceHigh[0]}%` : `機率${chanceHigh[0]}~${chanceHigh[1]}%`
+          break
+        }
+        case 2: {
+          reply[1].text = `${resultChance[1][0].time}、${resultChance[1][1].time}可能下雨`
+          reply[1].chance = resultChance[1][0].value[1] === resultChance[1][1].value[1] ? `機率${resultChance[1][0].value[1]}%` : `機率${resultChance[1][0].value[1]}、${resultChance[1][1].value[1]}%`
+          break
+        }
+        case 1: {
+          reply[1].text = `${resultChance[1][0].time}可能下雨`
+          reply[1].chance = `機率${resultChance[1][0].value[1]}%`
+          break
+        }
+      }
+      return reply
     }
 
     // ---抓取各縣市
@@ -137,6 +176,18 @@ const getData = async function (e) {
       }
     }
     fs.writeFileSync('areaList.json', JSON.stringify(areaList))
+
+    // 改村改第二個
+
+    // const $ = cheerio.load(data)
+    // const card = $('#general .col-md-3:first-child')
+    // const t = template
+    // t.hero.url = 'https://wdaweb.github.io/' + card.find('img').attr('src').slice(2)
+    // t.body.contents[0].text = card.find('.card-title a').text()
+    // t.body.contents[1].text = card.find('.card-description').text()
+
+    // const t2 = JSON.parse(JSON.stringify(t))
+    // t2.body.contents[0].text = 't2'
     e.reply(
       [{
         type: 'flex',
