@@ -8,7 +8,7 @@ const getData = async function (e) {
     const areaList = []
     // 用密鑰取出天氣預報綜合描述(涵蓋大多資料，用"。"分隔 )
     // F-D0047-093 是可挑選鄉鎮2天資料+縣市名(最多五個)
-    // 多縣市
+    // 多縣市 
     const getOrigin = async function () {
       const hugeList = []
       for (let i = 1; i <= 85; i += 20) {
