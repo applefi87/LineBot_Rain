@@ -1,33 +1,31 @@
 
 import axios from 'axios'
-// import { time } from 'console'
-// import cheerio from 'cheerio'
 import 'dotenv/config'
-import fs from 'fs'
-import mode from './mode.js'
-import ar from './areaList.js'
 
 const key = process.env.WEATHER_KEY
 const getData = async function (e) {
   try {
+    const areaList = []
     // 用密鑰取出天氣預報綜合描述(涵蓋大多資料，用"。"分隔 )
     // F-D0047-093 是可挑選鄉鎮2天資料+縣市名(最多五個)
     // 多縣市
-    const hugeList = []
-    for (let i = 1; i <= 85; i += 20) {
-      let place = ''
-      for (let n = i; n < 20 + i; n += 4) {
-        if (n <= 85) {
-          const two = n > 9 ? n : 0 + n.toString()
-          place += `F-D0047-0${two},`
+    const getOrigin = async function () {
+      const hugeList = []
+      for (let i = 1; i <= 85; i += 20) {
+        let place = ''
+        for (let n = i; n < 20 + i; n += 4) {
+          if (n <= 85) {
+            const two = n > 9 ? n : 0 + n.toString()
+            place += `F-D0047-0${two},`
+          }
         }
+        place = place.slice(0, place.length - 1)
+        const link = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=${key}&locationId=${place}&elementName=WeatherDescription`
+        const { data } = await axios.get(link)
+        hugeList.push(data)
       }
-      place = place.slice(0, place.length - 1)
-      const link = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=${key}&locationId=${place}&elementName=WeatherDescription`
-      const { data } = await axios.get(link)
-      hugeList.push(data)
+      return hugeList
     }
-
     // 下方area引用功能
     //  funmction:將時間擷取優化
     const listArrange = function (arr) {
@@ -112,11 +110,12 @@ const getData = async function (e) {
       }
       return { result: resultChance, style: change(resultChance) }
     }
-
-    // ---抓取各縣市
-    const areaList = []
-    for (const m in hugeList) {
-      const areasOrigin = hugeList[m].records.locations
+    // ----------抓取各縣市--------
+    const i = await getOrigin()
+    console.log('exportEveryDayList')
+    // fs.writeFileSync('getOrigin.json', JSON.stringify(i))
+    for (const m in i) {
+      const areasOrigin = i[m].records.locations
       for (const t in areasOrigin) {
         const areasName = areasOrigin[t].locationsName
         const areasInfo = areasOrigin[t].location.map(ar => {
@@ -132,25 +131,9 @@ const getData = async function (e) {
         areaList.push({ areasName, areasInfo })
       }
     }
-    // 可成功抓單日+顯
-    const place = areaList[18].areasInfo[11].dayWeather
-    const test = mode.list(place)
-    // fs.writeFileSync('place.json', JSON.stringify(place))
-    // fs.writeFileSync('test.json', JSON.stringify(test))
-    // fs.writeFileSync('areaList.json', JSON.stringify(areaList))
-    e.reply(
-      [{
-        type: 'flex',
-        altText: '共通課程',
-        contents: {
-          type: 'carousel',
-          contents: [test]
-        }
-      }]
-    )
+    return areaList
   } catch (err) {
     console.log(err)
   }
 }
-
 export default { getData }
