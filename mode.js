@@ -16,7 +16,7 @@ const list = function (arr) {
   for (const i in out) {
     if (i < 3) {
       const item = b.body.contents[2].contents[2].contents[i * 2].contents
-      // 縣市
+      // 縣市 
       b.body.contents[0].contents[0].contents[0].text = arr[0]
       // 鄉鎮區
       b.body.contents[0].contents[0].contents[1].text = arr[1]
