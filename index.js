@@ -27,9 +27,7 @@ const getAllList = async function () {
 // 寄出加工過的簡訊
 const pushMessage = function (c, t) {
   // 可成功抓單日+顯
-  // const place = testallList[18].areasInfo[11].dayWeather
-  // ***********************************************************代處理上傳回標準資訊
-  const place = testallList[c].areasInfo[t].dayWeather
+  const place = allList[c].areasInfo[t].dayWeather
   const test = mode.list([testallList[c].areasName, testallList[c].areasInfo[t].area, place])
   const box = [{
     type: 'flex',
@@ -51,7 +49,8 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   const countryCode = 18
   const townCode = 11
   pushMessage(countryCode, townCode)
-  schedule.scheduleJob('48 23 * * *', getAllList)
-  schedule.scheduleJob('* * * * *', function () {
+  schedule.scheduleJob('59 23 * * *', getAllList)
+  schedule.scheduleJob('0 6 * * *', function () {
+    pushMessage(countryCode, townCode)
   })
 })
