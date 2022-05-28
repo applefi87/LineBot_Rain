@@ -60,7 +60,7 @@ export default {
                     contents: [
                       {
                         type: 'image',
-                        url: 'https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png',
+                        url: 'https://www.moedict.tw/%E4%B8%8A%E5%8D%88.png?font=wt064',
                         aspectMode: 'cover',
                         size: '70%'
                       }
@@ -76,7 +76,7 @@ export default {
                     contents: [
                       {
                         type: 'image',
-                        url: 'https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png',
+                        url: 'https://is5-ssl.mzstatic.com/image/thumb/Purple125/v4/a1/d9/24/a1d924b9-3a28-910e-e74e-7d0d9465fdf5/source/512x512bb.jpg',
                         aspectMode: 'cover',
                         size: '70%'
                       }
@@ -92,7 +92,7 @@ export default {
                     contents: [
                       {
                         type: 'image',
-                        url: 'https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png',
+                        url: 'https://en.pimg.jp/048/777/929/1/48777929.jpg',
                         aspectMode: 'cover',
                         size: '70%'
                       }

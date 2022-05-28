@@ -27,8 +27,11 @@ const getAllList = async function () {
 // 寄出加工過的簡訊
 const pushMessage = function (c, t) {
   // 可成功抓單日+顯
-  const place = allList[c].areasInfo[t].dayWeather
-  const test = mode.list([testallList[c].areasName, testallList[c].areasInfo[t].area, place])
+  // **********************************************************************移除上線
+  const place = testallList[c]
+  // fs.writeFileSync('box.json', JSON.stringify(place))
+  const test = mode.list([place.areasName, place.areasInfo[t].area, place.areasInfo[t].dayWeather])
+
   const box = [{
     type: 'flex',
     altText: '今日下雨機率',
@@ -42,12 +45,15 @@ const pushMessage = function (c, t) {
 }
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
-  await getAllList()
+  // **********************************************************************移除上線
+  // await getAllList()
   // 輸入地區區碼
-  // const countryCode = 17
-  // const townCode = 5
-  const countryCode = 18
-  const townCode = 11
+  const countryCode = 17
+  const townCode = 5
+  // const countryCode = 18
+  // const townCode = 11
+  // const countryCode = 0
+  // const townCode = 0
   pushMessage(countryCode, townCode)
   schedule.scheduleJob('59 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {

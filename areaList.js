@@ -15,7 +15,7 @@ export default [
                     '短暫陣雨或雷雨|短暫陣雨或雷雨',
                     '50'
                   ],
-                  text: '不易下雨'
+                  text: 'nnn'
                 },
                 {
                   time: '上午',
@@ -23,7 +23,7 @@ export default [
                     '短暫陣雨或雷雨|短暫陣雨或雷雨',
                     '70'
                   ],
-                  text: '易下雨'
+                  text: '1易下雨'
                 },
                 {
                   time: '下午',
@@ -31,7 +31,7 @@ export default [
                     '短暫陣雨或雷雨|短暫陣雨或雷雨',
                     '80'
                   ],
-                  text: '下雨'
+                  text: '1下雨'
                 },
                 {
                   time: '晚上',
@@ -39,7 +39,7 @@ export default [
                     '短暫陣雨或雷雨|短暫陣雨或雷雨',
                     '30'
                   ],
-                  text: '不易下雨'
+                  text: '1不易下雨'
                 }
               ],
               style: '111'
@@ -145,7 +145,7 @@ export default [
                     '陰|陰',
                     '20'
                   ],
-                  text: '不下雨'
+                  text: 'nnn'
                 },
                 {
                   time: '上午',
@@ -153,7 +153,7 @@ export default [
                     '陰|陰',
                     '20'
                   ],
-                  text: '不下雨'
+                  text: '第二天上'
                 },
                 {
                   time: '下午',
@@ -161,7 +161,7 @@ export default [
                     '陰|陰',
                     '20'
                   ],
-                  text: '不下雨'
+                  text: '第二天下'
                 },
                 {
                   time: '晚上',
@@ -169,7 +169,7 @@ export default [
                     '多雲|多雲',
                     '10'
                   ],
-                  text: '不下雨'
+                  text: '第二天晚'
                 }
               ],
               style: '333'
@@ -275,7 +275,7 @@ export default [
                     '多雲|多雲',
                     '10'
                   ],
-                  text: '不下雨'
+                  text: 'nnn'
                 },
                 {
                   time: '上午',
@@ -283,7 +283,7 @@ export default [
                     '晴|多雲',
                     '10'
                   ],
-                  text: '不下雨'
+                  text: '31下雨'
                 },
                 {
                   time: '下午',
@@ -291,7 +291,7 @@ export default [
                     '多雲|晴',
                     '10'
                   ],
-                  text: '不下雨'
+                  text: '32下雨'
                 },
                 {
                   time: '晚上',
@@ -299,10 +299,10 @@ export default [
                     '晴|晴',
                     '10'
                   ],
-                  text: '不下雨'
+                  text: '33不下雨'
                 }
               ],
-              style: '333'
+              style: '221'
             },
             detail: [
               {
