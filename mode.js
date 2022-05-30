@@ -2,11 +2,9 @@ import b1 from './1.js'
 import b2 from './2.js'
 import b3 from './3.js'
 import body from './basic_body.js'
-import fs from 'fs'
 
-const arrbubble = [b1, b2, b3]
+// import fs from 'fs'
 const list = function (arr) {
-
   const result = arr[2]
   const out = []
   for (const i in result) {
@@ -37,17 +35,17 @@ const change = function (style, result, n) {
   for (const i in style) {
     if (style[i] === '1') {
       // ***************************************why會淺層複製?*******************
-      const x = JSON.parse(JSON.stringify(getB([1, result[i * 1 + 1].text])))
-      // fs.writeFileSync(`out${n}-${i}.json`, JSON.stringify(x))
+      const x = getB([1, result[i * 1 + 1].text])
+      // fs.writeFileSync(`out${n}${i}1.json`, JSON.stringify(x))
       // x是正確的，push怪怪的
       out.push(x)
-      // fs.writeFileSync(`out${n}&${i}.json`, JSON.stringify(out))
+      // fs.writeFileSync(`out${n}${i}2.json`, JSON.stringify(out))
     } else if (style[i] === '2' && i === '1') {
-      const y = JSON.parse(JSON.stringify(getB([2, result[2].text])))
+      const y = getB([2, result[2].text])
       // fs.writeFileSync(`out${i}.json`, JSON.stringify(y))
       out.push(y)
     } else if (style[i] === '3' && i === '1') {
-      const z = JSON.parse(JSON.stringify(getB([3, result[2].text])))
+      const z = getB([3, result[2].text])
       out.push(z)
     }
   }
@@ -55,6 +53,7 @@ const change = function (style, result, n) {
 }
 // 將資料加進對應的bubble並回傳
 const getB = function (inarr) {
+  const arrbubble = [b1, b2, b3]
   const out = arrbubble[inarr[0] - 1]
   out.contents[0].text = inarr[1]
   return out

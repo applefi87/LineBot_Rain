@@ -2,11 +2,8 @@ import 'dotenv/config'
 import linebot from 'linebot'
 import dat from './data.js'
 import schedule from 'node-schedule'
-import fs from 'fs'
 import mode from './mode.js'
-import testallList from './areaList.js'
-
-// import dat from './test.js'
+// import testallList from './areaList.js'
 
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,
@@ -22,31 +19,36 @@ bot.on('message', (e) => {
 let allList = ''
 const getAllList = async function () {
   allList = await dat.getData()
-  // fs.writeFileSync('getOrigin.json', JSON.stringify(o))
 }
 // 寄出加工過的簡訊
 const pushMessage = function (c, t) {
   // 可成功抓單日+顯
-  // **********************************************************************移除上線
-  const place = testallList[c]
-  // fs.writeFileSync('box.json', JSON.stringify(place))
-  const test = mode.list([place.areasName, place.areasInfo[t].area, place.areasInfo[t].dayWeather])
+  const place = allList[c]
+  const dayinfo = place.areasInfo[t].dayWeather
+  const test = mode.list([place.areasName, place.areasInfo[t].area, dayinfo])
+
+  const daydetail = place.areasInfo[t].dayWeather[0].summary.result
+  const largest = 0
+  const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
+  for (const i in daydetail) {
+    if (daydetail[i].value[1] > largest) {
+      daydetail[i].value[1] = largest
+    }
+  }
 
   const box = [{
     type: 'flex',
-    altText: '今日下雨機率',
+    altText: `下雨機率${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
     contents: {
       type: 'carousel',
       contents: [test]
     }
   }]
-  // fs.writeFileSync('box.json', JSON.stringify(box))
   bot.broadcast(box)
 }
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
-  // **********************************************************************移除上線
-  // await getAllList()
+  await getAllList()
   // 輸入地區區碼
   const countryCode = 17
   const townCode = 5
