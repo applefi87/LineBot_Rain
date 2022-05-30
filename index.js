@@ -38,7 +38,7 @@ const pushMessage = function (c, t) {
 
   const box = [{
     type: 'flex',
-    altText: `下雨機率${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
+    altText: `今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
     contents: {
       type: 'carousel',
       contents: [test]
@@ -56,7 +56,6 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // const townCode = 11
   // const countryCode = 0
   // const townCode = 0
-  pushMessage(countryCode, townCode)
   schedule.scheduleJob('59 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {
     pushMessage(countryCode, townCode)
