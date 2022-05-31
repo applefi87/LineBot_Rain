@@ -3,6 +3,10 @@ import linebot from 'linebot'
 import dat from './data.js'
 import schedule from 'node-schedule'
 import mode from './mode.js'
+// dyno用
+import express from 'express'
+import wakeUpDyno from './wokeDyno.js' // my module!
+
 // import testallList from './areaList.js'
 
 const bot = linebot({
@@ -47,13 +51,10 @@ const pushMessage = function (c, t) {
     }]
     bot.broadcast(box)
   } catch (err) {
-    bot.broadcast([{
-      "type": "text",
-      "text": `錯誤碼:${err}`
-    }, {
-      "type": "text",
-      "text": "待凌晨重新抓取"
-    }])
+    bot.broadcast({
+      type: 'text',
+      text: `待凌晨重新抓取 --錯誤碼:${err}`
+    })
   }
 }
 bot.listen('/', process.env.PORT || 3000, async () => {
@@ -70,5 +71,16 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   schedule.scheduleJob('59 23 * * *', getAllList)
   schedule.scheduleJob('0 * * * *', function () {
     pushMessage(countryCode, townCode)
+  })
+  const bb = function () {
+    bot.broadcast({
+      type: 'text',
+      text: '親自喚醒'
+    })
+  }
+
+  // dyno用
+  express().listen(3001, () => {
+    wakeUpDyno('https://linebot--rain.herokuapp.com/', bb) // will start once server starts
   })
 })
