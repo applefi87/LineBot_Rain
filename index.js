@@ -57,7 +57,7 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // const countryCode = 0
   // const townCode = 0
   schedule.scheduleJob('59 23 * * *', getAllList)
-  schedule.scheduleJob('0 6 * * *', function () {
+  schedule.scheduleJob('0 * * * *', function () {
     pushMessage(countryCode, townCode)
   })
 })
