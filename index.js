@@ -35,7 +35,7 @@ const pushMessage = function (c, t) {
       daydetail[i].value[1] = largest
     }
   }
-
+ 
   const box = [{
     type: 'flex',
     altText: `今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
