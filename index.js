@@ -23,28 +23,38 @@ const getAllList = async function () {
 // 寄出加工過的簡訊
 const pushMessage = function (c, t) {
   // 可成功抓單日+顯
-  const place = allList[c]
-  const dayinfo = place.areasInfo[t].dayWeather
-  const test = mode.list([place.areasName, place.areasInfo[t].area, dayinfo])
+  try {
+    const place = allList[c]
+    const dayinfo = place.areasInfo[t].dayWeather
+    const test = mode.list([place.areasName, place.areasInfo[t].area, dayinfo])
 
-  const daydetail = place.areasInfo[t].dayWeather[0].summary.result
-  const largest = 0
-  const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
-  for (const i in daydetail) {
-    if (daydetail[i].value[1] > largest) {
-      daydetail[i].value[1] = largest
+    const daydetail = place.areasInfo[t].dayWeather[0].summary.result
+    const largest = 0
+    const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
+    for (const i in daydetail) {
+      if (daydetail[i].value[1] > largest) {
+        daydetail[i].value[1] = largest
+      }
     }
+
+    const box = [{
+      type: 'flex',
+      altText: `今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
+      contents: {
+        type: 'carousel',
+        contents: [test]
+      }
+    }]
+    bot.broadcast(box)
+  } catch (err) {
+    bot.broadcast([{
+      "type": "text",
+      "text": `錯誤碼:${err}`
+    }, {
+      "type": "text",
+      "text": "待凌晨重新抓取"
+    }])
   }
- 
-  const box = [{
-    type: 'flex',
-    altText: `今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
-    contents: {
-      type: 'carousel',
-      contents: [test]
-    }
-  }]
-  bot.broadcast(box)
 }
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
@@ -52,6 +62,7 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // 輸入地區區碼
   const countryCode = 17
   const townCode = 5
+  pushMessage(countryCode, townCode)
   // const countryCode = 18
   // const townCode = 11
   // const countryCode = 0
