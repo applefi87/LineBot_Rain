@@ -1,6 +1,8 @@
 
 import axios from 'axios'
+import { SSL_OP_NO_TLSv1_2 } from 'constants'
 import 'dotenv/config'
+import fs from 'fs'
 
 const key = process.env.WEATHER_KEY
 const getData = async function (e) {
@@ -56,12 +58,12 @@ const getData = async function (e) {
         }
       }
       for (const d in dayWeather) {
-        dayWeather[d].summary = summaryText(dayWeather[d].detail)
+        dayWeather[d].summary = summaryText(dayWeather[d].detail, d)
       }
       return dayWeather
     }
     // function 將當每日資料整理成結論
-    const summaryText = function (arr) {
+    const summaryText = function (arr, i) {
       // 整理成凌晨 上午 下午 晚上 的口語預報
       const result = []
       for (const t in arr) {
@@ -69,19 +71,56 @@ const getData = async function (e) {
           result.push({ time: arr[t].time, value: [arr[t].value[0] + '|' + arr[t * 1 + 1].value[0], arr[t].value[1]] })
         }
       }
+      // fs.writeFileSync(i + 'result.json', JSON.stringify(result))
+      // 解決非半夜抓資料而缺少，導致位置跑掉
+      // 第一天
+      if (i === '0') {
+        const rl = result.length
+        if (rl < 4) {
+          const arr = []
+          for (let n = 0; n < 4 - rl; n++) {
+            arr.push({
+              time: n * 6,
+              value: [
+                '多雲|多雲',
+                '-100'
+              ]
+            })
+          }
+          result.unshift(...arr)
+        }
+      }
+      // 第二天
+      if (i === '2') {
+        const rl = result.length
+        if (rl < 4) {
+          const arr = []
+          for (let n = 0; n < 4 - rl; n++) {
+            arr.push({
+              time: n * 6,
+              value: [
+                '多雲|多雲',
+                '-100'
+              ]
+            })
+          }
+          result.push(...arr)
+        }
+      }
+
       // 依照降雨機率分類
       const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
       const resultChance = [[], [], [], []]
       for (const i in result) {
         const t = result[i].time
         let text = ''
-        if (t === '00') {
+        if (t * 1 === 0) {
           text = '凌晨'
-        } else if (t === '06') {
+        } else if (t * 1 === 6) {
           text = '上午'
-        } else if (t === '12') {
+        } else if (t * 1 === 12) {
           text = '下午'
-        } else if (t === '18') {
+        } else if (t * 1 === 18) {
           text = '晚上'
         }
         if (result[i].value[1] >= 80) {
@@ -94,9 +133,11 @@ const getData = async function (e) {
           resultChance[i] = { time: text, value: result[i].value, text: speak[3] }
         } else if (result[i].value[1] >= 0) {
           resultChance[i] = { time: text, value: result[i].value, text: speak[4] }
+        } else {
+          resultChance[i] = { time: text, value: result[i].value, text: '無資料' }
         }
       }
-      // fs.writeFileSync('resultChance.json', JSON.stringify(resultChance))
+      // fs.writeFileSync(i + 'resultChance.json', JSON.stringify(resultChance))
       // 以下只是想到的一個算法 配合如何產出line三種尺寸的資料
       const change = function (ar) {
         let o = ''

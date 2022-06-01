@@ -5,49 +5,47 @@ import body from './basic_body.js'
 
 // import fs from 'fs'
 const list = function (arr) {
-  const result = arr[2]
-  const out = []
-  for (const i in result) {
-    const sum = result[i].summary
-    // *****************************到這資料開始出錯
-    const ch = change(sum.style, sum.result, i)
-    out.push([ch, result[i].day])
-  }
-  const b = body
-  for (const i in out) {
-    if (i < 3) {
-      const item = b.body.contents[2].contents[2].contents[i * 2].contents
-      // 縣市
-      b.body.contents[0].contents[0].contents[0].text = arr[0]
-      // 鄉鎮區
-      b.body.contents[0].contents[0].contents[1].text = arr[1]
-      item[2].contents = out[i][0]
-      const t = out[i][1].slice(5).replace('-', '/')
-      item[0].contents[1].text = t
+  try {
+    const result = arr[2]
+    const out = []
+    for (const i in result) {
+      const sum = result[i].summary
+      const ch = change(sum.style, sum.result, i)
+      out.push([ch, result[i].day])
     }
+    const b = body
+    for (const i in out) {
+      if (i < 3) {
+        const item = b.body.contents[2].contents[2].contents[i * 2].contents
+        // 縣市
+        b.body.contents[0].contents[0].contents[0].text = arr[0]
+        // 鄉鎮區
+        b.body.contents[0].contents[0].contents[1].text = arr[1]
+        item[2].contents = out[i][0]
+        const t = out[i][1].slice(5).replace('-', '/')
+        item[0].contents[1].text = t
+      }
+    }
+    return b
+  } catch (e) {
+    console.log(e)
   }
-
-  return b
 }
 // 將每日的資料過程幾格(交給下方配json)
 const change = function (style, result, n) {
   const out = []
   for (const i in style) {
     if (style[i] === '1') {
-      // ***************************************why會淺層複製?*******************
       const x = getB([1, result[i * 1 + 1].text])
-      // fs.writeFileSync(`out${n}${i}1.json`, JSON.stringify(x))
-      // x是正確的，push怪怪的
       out.push(x)
-      // fs.writeFileSync(`out${n}${i}2.json`, JSON.stringify(out))
     } else if (style[i] === '2' && i === '1') {
       const y = getB([2, result[2].text])
-      // fs.writeFileSync(`out${i}.json`, JSON.stringify(y))
       out.push(y)
     } else if (style[i] === '3' && i === '1') {
       const z = getB([3, result[2].text])
       out.push(z)
     }
+    // console.log(out[out.length - 1])
   }
   return out
 }

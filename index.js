@@ -3,6 +3,8 @@ import linebot from 'linebot'
 import dat from './data.js'
 import schedule from 'node-schedule'
 import mode from './mode.js'
+import fs from 'fs'
+
 // dyno用
 import express from 'express'
 import wakeUpDyno from './wokeDyno.js' // my module!
@@ -14,7 +16,12 @@ const bot = linebot({
   channelSecret: process.env.CHANNEL_SECRET,
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 })
-
+const broadcastErr = function (place = 'here', err) {
+  bot.broadcast({
+    type: 'text',
+    text: place + err
+  })
+}
 bot.on('message', (e) => {
 
 })
@@ -29,17 +36,19 @@ const pushMessage = function (c, t) {
   // 可成功抓單日+顯
   try {
     const place = allList[c]
+    // fs.writeFileSync('test.json', JSON.stringify(place))
     const dayinfo = place.areasInfo[t].dayWeather
     const test = mode.list([place.areasName, place.areasInfo[t].area, dayinfo])
 
     const daydetail = place.areasInfo[t].dayWeather[0].summary.result
     const largest = 0
     const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
-    for (const i in daydetail) {
-      if (daydetail[i].value[1] > largest) {
-        daydetail[i].value[1] = largest
-      }
-    }
+    console.log(daydetail)
+    // for (const i in daydetail) {
+    //   if (daydetail[i].value[1] > largest) {
+    //     daydetail[i].value[1] = largest
+    //   }
+    // }
 
     const box = [{
       type: 'flex',
@@ -49,14 +58,14 @@ const pushMessage = function (c, t) {
         contents: [test]
       }
     }]
+    // fs.writeFileSync('box.json', JSON.stringify(box))
     bot.broadcast(box)
   } catch (err) {
-    bot.broadcast({
-      type: 'text',
-      text: `待凌晨重新抓取 --錯誤碼:${err}`
-    })
+    console.log(err)
+    broadcastErr('index:', err)
   }
 }
+
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
   await getAllList()
@@ -68,19 +77,13 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // const townCode = 11
   // const countryCode = 0
   // const townCode = 0
-  schedule.scheduleJob('59 23 * * *', getAllList)
+  schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 * * * *', function () {
     pushMessage(countryCode, townCode)
   })
-  const bb = function () {
-    bot.broadcast({
-      type: 'text',
-      text: '親自喚醒'
-    })
-  }
 
   // dyno用
   express().listen(3001, () => {
-    wakeUpDyno('https://linebot--rain.herokuapp.com/', bb) // will start once server starts
+    wakeUpDyno('https://linebot--rain.herokuapp.com/', broadcastErr) // will start once server starts
   })
 })
