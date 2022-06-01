@@ -38,7 +38,8 @@ const pushMessage = function (arr) {
     const place = allList[arr[0]]
     // fs.writeFileSync('test.json', JSON.stringify(place))
     const dayinfo = place.areasInfo[arr[1]].dayWeather
-    const test = mode.list([place.areasName, place.areasInfo[arr[1]].area, dayinfo])
+    const area = place.areasInfo[arr[1]].area
+    const test = mode.list([place.areasName, area, dayinfo])
 
     const daydetail = place.areasInfo[arr[1]].dayWeather[0].summary.result
     const largest = 0
@@ -52,7 +53,7 @@ const pushMessage = function (arr) {
 
     const box = [{
       type: 'flex',
-      altText: `今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
+      altText: `${area}今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
       contents: {
         type: 'carousel',
         contents: [test]

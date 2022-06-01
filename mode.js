@@ -3,7 +3,7 @@ import b2 from './2.js'
 import b3 from './3.js'
 import body from './basic_body.js'
 
-// import fs from 'fs'
+const arrbubble = [b1, b2, b3]
 const list = function (arr) {
   try {
     const result = arr[2]
@@ -36,22 +36,20 @@ const change = function (style, result, n) {
   const out = []
   for (const i in style) {
     if (style[i] === '1') {
-      const x = getB([1, result[i * 1 + 1].text])
+      const x = JSON.parse(JSON.stringify(getB([1, result[i * 1 + 1].text])))
       out.push(x)
     } else if (style[i] === '2' && i === '1') {
-      const y = getB([2, result[2].text])
+      const y = JSON.parse(JSON.stringify(getB([2, result[2].text])))
       out.push(y)
     } else if (style[i] === '3' && i === '1') {
-      const z = getB([3, result[2].text])
+      const z = JSON.parse(JSON.stringify(getB([3, result[2].text])))
       out.push(z)
     }
-    // console.log(out[out.length - 1])
   }
   return out
 }
 // 將資料加進對應的bubble並回傳
 const getB = function (inarr) {
-  const arrbubble = [b1, b2, b3]
   const out = arrbubble[inarr[0] - 1]
   out.contents[0].text = inarr[1]
   return out
