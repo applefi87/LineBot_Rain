@@ -32,15 +32,15 @@ const getAllList = async function () {
   allList = await dat.getData()
 }
 // 寄出加工過的簡訊
-const pushMessage = function (c, t) {
+const pushMessage = function (arr) {
   // 可成功抓單日+顯
   try {
-    const place = allList[c]
+    const place = allList[arr[0]]
     // fs.writeFileSync('test.json', JSON.stringify(place))
-    const dayinfo = place.areasInfo[t].dayWeather
-    const test = mode.list([place.areasName, place.areasInfo[t].area, dayinfo])
+    const dayinfo = place.areasInfo[arr[1]].dayWeather
+    const test = mode.list([place.areasName, place.areasInfo[arr[1]].area, dayinfo])
 
-    const daydetail = place.areasInfo[t].dayWeather[0].summary.result
+    const daydetail = place.areasInfo[arr[1]].dayWeather[0].summary.result
     const largest = 0
     const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
     console.log(daydetail)
@@ -70,16 +70,15 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
   await getAllList()
   // 輸入地區區碼
-  const countryCode = 17
-  const townCode = 5
-  pushMessage(countryCode, townCode)
-  // const countryCode = 18
-  // const townCode = 11
-  // const countryCode = 0
-  // const townCode = 0
+  const c1 = [17, 5]
+  const c2 = [18, 11]
+  pushMessage(c1)
+  pushMessage(c2)
+
   schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 * * * *', function () {
-    pushMessage(countryCode, townCode)
+    pushMessage(c1)
+    pushMessage(c2)
   })
 
   // dyno用
