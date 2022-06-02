@@ -29,7 +29,7 @@ const getAllList = async function () {
   allList = await dat.getData(botBroadcast)
 }
 // 寄出加工過的簡訊
-const pushMessage = function (arr) {
+const getMessage = function (arr) {
   // 可成功抓單日+顯
   try {
     const place = allList[arr[0]]
@@ -56,17 +56,17 @@ const pushMessage = function (arr) {
         contents: [test]
       }
     }]
-    bot.broadcast(box)
+    return box
   } catch (err) {
     console.log(err)
-    botBroadcast('index:', err)
+    return err
   }
 }
 const c1 = [17, 5]
 const c2 = [18, 11]
 bot.on('message', (e) => {
-  pushMessage(c1)
-  pushMessage(c2)
+  e.reply(getMessage(c1))
+  e.reply(getMessage(c2))
 })
 
 bot.listen('/', process.env.PORT || 3000, async () => {
@@ -75,8 +75,8 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // 輸入地區區碼
   schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {
-    pushMessage(c1)
-    pushMessage(c2)
+    bot.broadcast(getMessage(c1))
+    bot.broadcast(getMessage(c2))
   })
   // dyno用
   express().listen(3001, () => {
