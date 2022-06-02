@@ -62,6 +62,7 @@ const getMessage = function (arr) {
     return err
   }
 }
+// 輸入地區區碼
 const c1 = [17, 5]
 const c2 = [18, 11]
 bot.on('message', (e) => {
@@ -72,7 +73,6 @@ bot.on('message', (e) => {
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
   await getAllList()
-  // 輸入地區區碼
   schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {
     bot.broadcast(getMessage(c1))
