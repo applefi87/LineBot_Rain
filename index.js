@@ -63,11 +63,14 @@ const getMessage = function (arr) {
   }
 }
 // 輸入地區區碼
-const c1 = [17, 5]
-const c2 = [18, 11]
+const c1 = [18, 11]
+const c2 = [17, 5]
 bot.on('message', (e) => {
-  e.reply(getMessage(c1))
-  e.reply(getMessage(c2))
+  if (e.message.text === '1') {
+    e.reply(getMessage(c1))
+  } else {
+    e.reply(getMessage(c2))
+  }
 })
 
 bot.listen('/', process.env.PORT || 3000, async () => {
