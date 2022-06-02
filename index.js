@@ -56,7 +56,6 @@ const pushMessage = function (arr) {
         contents: [test]
       }
     }]
-    // fs.writeFileSync('box.json', JSON.stringify(box))
     bot.broadcast(box)
   } catch (err) {
     console.log(err)
@@ -65,7 +64,6 @@ const pushMessage = function (arr) {
 }
 const c1 = [17, 5]
 const c2 = [18, 11]
-
 bot.on('message', (e) => {
   pushMessage(c1)
   pushMessage(c2)
@@ -80,7 +78,6 @@ bot.listen('/', process.env.PORT || 3000, async () => {
     pushMessage(c1)
     pushMessage(c2)
   })
-
   // dyno用
   express().listen(3001, () => {
     wakeUpDyno('https://linebot--rain.herokuapp.com/', botBroadcast) // will start once server starts
