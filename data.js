@@ -1,11 +1,10 @@
 
 import axios from 'axios'
-import { SSL_OP_NO_TLSv1_2 } from 'constants'
 import 'dotenv/config'
-import fs from 'fs'
+// import fs from 'fs'
 
 const key = process.env.WEATHER_KEY
-const getData = async function (e) {
+const getData = async function (bot) {
   try {
     const areaList = []
     // 用密鑰取出天氣預報綜合描述(涵蓋大多資料，用"。"分隔 )
@@ -172,6 +171,7 @@ const getData = async function (e) {
         areaList.push({ areasName, areasInfo })
       }
     }
+    bot('data', 'updated')
     return areaList
   } catch (err) {
     console.log(err)

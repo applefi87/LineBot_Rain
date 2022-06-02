@@ -3,7 +3,7 @@ import linebot from 'linebot'
 import dat from './data.js'
 import schedule from 'node-schedule'
 import mode from './mode.js'
-import fs from 'fs'
+// import fs from 'fs'
 
 // dyno用
 import express from 'express'
@@ -16,20 +16,17 @@ const bot = linebot({
   channelSecret: process.env.CHANNEL_SECRET,
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 })
-const broadcastErr = function (place = 'here:', err) {
+const botBroadcast = function (place = 'here:', err) {
   bot.broadcast({
     type: 'text',
     text: place + err
   })
 }
-bot.on('message', (e) => {
-
-})
 
 // 取得當日資料
 let allList = ''
 const getAllList = async function () {
-  allList = await dat.getData()
+  allList = await dat.getData(botBroadcast)
 }
 // 寄出加工過的簡訊
 const pushMessage = function (arr) {
@@ -63,27 +60,29 @@ const pushMessage = function (arr) {
     bot.broadcast(box)
   } catch (err) {
     console.log(err)
-    broadcastErr('index:', err)
+    botBroadcast('index:', err)
   }
 }
+const c1 = [17, 5]
+const c2 = [18, 11]
+
+bot.on('message', (e) => {
+  pushMessage(c1)
+  pushMessage(c2)
+})
 
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
   await getAllList()
   // 輸入地區區碼
-  const c1 = [17, 5]
-  const c2 = [18, 11]
-  pushMessage(c1)
-  pushMessage(c2)
-
   schedule.scheduleJob('48 23 * * *', getAllList)
-  schedule.scheduleJob('0 * * * *', function () {
+  schedule.scheduleJob('0 6 * * *', function () {
     pushMessage(c1)
     pushMessage(c2)
   })
 
   // dyno用
   express().listen(3001, () => {
-    wakeUpDyno('https://linebot--rain.herokuapp.com/', broadcastErr) // will start once server starts
+    wakeUpDyno('https://linebot--rain.herokuapp.com/', botBroadcast) // will start once server starts
   })
 })
