@@ -68,8 +68,10 @@ const c2 = [17, 5]
 bot.on('message', (e) => {
   if (e.message.text === '1') {
     e.reply(getMessage(c1))
+    console.log('get 1')
   } else {
     e.reply(getMessage(c2))
+    console.log('get 2')
   }
 })
 
