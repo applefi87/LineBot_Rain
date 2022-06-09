@@ -3,7 +3,6 @@ import linebot from 'linebot'
 import dat from './data.js'
 import schedule from 'node-schedule'
 import mode from './mode.js'
-// import fs from 'fs'
 
 // dyno用
 import express from 'express'
@@ -41,7 +40,7 @@ const getMessage = function (arr) {
     const daydetail = place.areasInfo[arr[1]].dayWeather[0].summary.result
     const largest = 0
     const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
-    console.log(daydetail)
+    // console.log(daydetail)
     // for (const i in daydetail) {
     //   if (daydetail[i].value[1] > largest) {
     //     daydetail[i].value[1] = largest
@@ -66,6 +65,7 @@ const getMessage = function (arr) {
 const c1 = [18, 11]
 const c2 = [17, 5]
 bot.on('message', (e) => {
+  console.log('get message')
   if (e.message.text === '1') {
     e.reply(getMessage(c1))
     console.log('get 1')
@@ -76,8 +76,9 @@ bot.on('message', (e) => {
 })
 
 bot.listen('/', process.env.PORT || 3000, async () => {
-  console.log('bot on')
+  console.log('bot on new')
   await getAllList()
+  bot.broadcast(getMessage(c1))
   schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {
     bot.broadcast(getMessage(c1))
