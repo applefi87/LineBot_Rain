@@ -31,13 +31,15 @@ const getAllList = async function () {
 const getMessage = function (arr) {
   // 可成功抓單日+顯
   try {
-    const place = allList[arr[0]]
+    const ar0 = arr[0]
+    const ar1 = arr[1]
+    const place = allList[ar0]
     // fs.writeFileSync('test.json', JSON.stringify(place))
-    const dayinfo = place.areasInfo[arr[1]].dayWeather
-    const area = place.areasInfo[arr[1]].area
+    const dayinfo = place.areasInfo[ar1].dayWeather
+    const area = place.areasInfo[ar1].area
     const test = mode.list([place.areasName, area, dayinfo])
 
-    const daydetail = place.areasInfo[arr[1]].dayWeather[0].summary.result
+    const daydetail = place.areasInfo[ar1].dayWeather[0].summary.result
     const largest = 0
     const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
     // console.log(daydetail)
@@ -62,27 +64,25 @@ const getMessage = function (arr) {
   }
 }
 // 輸入地區區碼
-const c1 = [18, 11]
-const c2 = [17, 5]
 bot.on('message', (e) => {
+ const arr = e.message.text.split(':')
+ console.log(arr);
   console.log('get message')
-  if (e.message.text === '1') {
-    e.reply(getMessage(c1))
-    console.log('get 1')
+  if ( !isNaN(arr[0])&&!isNaN(arr[1])) {
+    e.reply(getMessage(arr))
+    console.log('ok')
   } else {
-    e.reply(getMessage(c2))
-    console.log('get 2')
+    e.reply('格式錯誤')
+    console.log('err')
   }
 })
 
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on new')
   await getAllList()
-  bot.broadcast(getMessage(c1))
   schedule.scheduleJob('48 23 * * *', getAllList)
   schedule.scheduleJob('0 6 * * *', function () {
-    bot.broadcast(getMessage(c1))
-    bot.broadcast(getMessage(c2))
+    // bot.broadcast(getMessage(c1))
   })
   // dyno用
   express().listen(3001, () => {
