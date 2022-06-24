@@ -1,7 +1,7 @@
-import b1 from './1.js'
-import b2 from './2.js'
-import b3 from './3.js'
-import body from './basic_body.js'
+import b1 from './message/1.js'
+import b2 from './message/2.js'
+import b3 from './message/3.js'
+import body from './message/basic_body.js'
 
 const arrbubble = [b1, b2, b3]
 const list = function (arr) {
