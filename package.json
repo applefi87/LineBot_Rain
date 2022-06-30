@@ -38,7 +38,7 @@
     "media-typer": "^0.3.0",
     "mime-db": "^1.52.0",
     "mime-types": "^2.1.35",
-    "mongoose": "^6.4.0",
+    "mongoose": "^6.4.1",
     "ms": "^2.1.2",
     "node-fetch": "^3.2.5",
     "node-schedule": "^2.1.0",

@@ -23,17 +23,11 @@ const bot = linebot({
   channelSecret: process.env.CHANNEL_SECRET,
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 })
-const botBroadcast = function (place = 'here:', err) {
-  bot.broadcast({
-    type: 'text',
-    text: place + err
-  })
-}
 
 // 取得當日資料
 let allList = ''
 const getAllList = async function () {
-  allList = await dat.getData(botBroadcast)
+  allList = await dat.getData()
 }
 // 寄出加工過的簡訊
 const getMessage = arr => {
@@ -103,7 +97,6 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   //   bot.broadcast(getMessage(c1))
   // })
   // dyno用
-  bot.push("U9f3d2aedf9e4f8e5b1d1e0c2fcfb5082", "ooo")
   const app = express()
   app.use(express.json())
   app.listen(process.env.PORT || 4000, () => {
