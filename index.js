@@ -6,9 +6,6 @@ import mode from './mode.js'
 import mongoose from 'mongoose'
 import { usersPush, usersGet } from './controllers/users.js'
 
-import fs from 'fs'
-
-
 // dyno用
 import express from 'express'
 import wakeUpDyno from './wokeDyno.js' // my module!
@@ -70,11 +67,20 @@ const getMessage = arr => {
 // 輸入地區區碼
 bot.on('message', async (e) => {
   console.log('get message')
+
+// 建立簡化的陣列供查找
+  const table = allList.map(it => {
+    const place = it.areasName
+    const detail = it.areasInfo.map(i => i.area)
+    return [place, detail]
+  })
+
   try {
-    let arr = e.message.text.split(':')
-    if (!arr || arr.length != 2 || isNaN(arr[0]) || isNaN(arr[1])) { throw new Error('not a number') }
-    arr = arr.map(i => { return Number(i) })
-    // 嘗試抓資料=>回覆
+      // 把table跟傳的訊息對應出idx
+    const placeIdx = table.findIndex(it => it[0] === e.message.text.substr(0, 3))
+    const detailIdx = table[placeIdx][1].findIndex(it => it === e.message.text.substr(3))
+    const arr = [placeIdx, detailIdx]
+    console.log(arr);
     let msg
     await getMessage(arr).then(res => { msg = res })
     if (!msg) { throw new Error('回覆前審核出錯') }
@@ -86,6 +92,24 @@ bot.on('message', async (e) => {
     e.reply(stringify(err))
     console.log('以下bot.on錯誤', err)
   }
+
+  // 
+  // try {
+  //   let arr = e.message.text.split(':')
+  //   if (!arr || arr.length != 2 || isNaN(arr[0]) || isNaN(arr[1])) { throw new Error('not a number') }
+  //   arr = arr.map(i => { return Number(i) })
+  //   // 嘗試抓資料=>回覆
+  //   let msg
+  //   await getMessage(arr).then(res => { msg = res })
+  //   if (!msg) { throw new Error('回覆前審核出錯') }
+  //   e.reply(msg)
+  //   // 回覆成功再加資料庫 
+  //   await usersPush(e.source.userId, arr)
+  //   console.log('回覆動作結束');
+  // } catch (err) {
+  //   e.reply(stringify(err))
+  //   console.log('以下bot.on錯誤', err)
+  // }
 })
 
 bot.listen('/', process.env.PORT || 3000, async () => {
@@ -110,8 +134,8 @@ schedule.scheduleJob('0 7 * * *', async () => {
 })
 
 // 自動喚醒
-  const app = express()
+const app = express()
 
-  app.listen( 4001, () => {
-    wakeUpDyno('https://linebot--rain.herokuapp.com/') // will start once server starts
-  })
+app.listen(4001, () => {
+  wakeUpDyno('https://linebot--rain.herokuapp.com/') // will start once server starts
+})
