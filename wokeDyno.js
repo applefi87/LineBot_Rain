@@ -4,7 +4,6 @@ const interval = 25
 const wakeUpDyno = (url) => {
   setInterval(() => {
     try {
-      // bot('wake', '')
       // HTTP GET request to the dyno's url
       fetch(url).then(() => console.log(`AN Fetching ${url}.`))
     } catch (err) { // catch fetch errors

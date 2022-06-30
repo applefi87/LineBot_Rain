@@ -97,11 +97,7 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   //   bot.broadcast(getMessage(c1))
   // })
   // dyno用
-  const app = express()
-  app.use(express.json())
-  app.listen(process.env.PORT || 4000, () => {
-    wakeUpDyno('https://linebot--rain.herokuapp.com/') // will start once server starts
-  })
+
 })
 // **************測試回覆
 schedule.scheduleJob('0 7 * * *', async () => {
@@ -112,3 +108,10 @@ schedule.scheduleJob('0 7 * * *', async () => {
     await bot.push(set.id, ms)
   }
 })
+
+// 自動喚醒
+  const app = express()
+
+  app.listen( 4001, () => {
+    wakeUpDyno('https://linebot--rain.herokuapp.com/') // will start once server starts
+  })
