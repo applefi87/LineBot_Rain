@@ -151,7 +151,7 @@ const getData = async function () {
     }
     // ----------抓取各縣市--------
     const i = await getOrigin()
-    console.log('exportEveryDayList')
+    console.log("Today's list builded")
     // fs.writeFileSync('getOrigin.json', JSON.stringify(i))
     for (const m in i) {
       const areasOrigin = i[m].records.locations
@@ -175,4 +175,4 @@ const getData = async function () {
     console.log(err)
   }
 }
-export default { getData }
+export default  getData

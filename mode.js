@@ -1,3 +1,4 @@
+// 將表格轉成lINE MESSAGE格式
 import b1 from './message/1.js'
 import b2 from './message/2.js'
 import b3 from './message/3.js'
