@@ -62,7 +62,8 @@ const getMessage = arr => {
       contents: [test]
     }
   }
-  return box
+  // 多物件會多一層[] 記得用[0]去掉
+  return [box]
 }
 
 
@@ -109,7 +110,7 @@ schedule.scheduleJob('0 6 * * *', async () => {
     let msg = []
     const places = userSetting[user].places
     for(const p in places){
-      msg.push(JSON.parse(JSON.stringify(getMessage(places[p]))))
+      msg.push(JSON.parse(JSON.stringify(getMessage(places[p])[0])))
     }
     await bot.push(userSetting[user].id, msg)
   }
