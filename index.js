@@ -62,7 +62,8 @@ const getMessage = arr => {
       contents: [test]
     }
   }
-  return box
+  // 多物件會多一層[] 記得用[0]去掉
+  return [box]
 }
 
 
@@ -102,14 +103,15 @@ bot.listen('/', process.env.PORT || 3000, async () => {
   // dyno用
 })
 
-// **************每日自動回覆最後2則訊息
+// 每日自動回覆最後2則訊息
+// 不知為何推波時間都是14. 明明設6
 schedule.scheduleJob('0 6 * * *', async () => {
   const userSetting = await usersGet()
   for (const user in userSetting) {
     let msg = []
     const places = userSetting[user].places
     for(const p in places){
-      msg.push(JSON.parse(JSON.stringify(getMessage(places[p]))))
+      msg.push(JSON.parse(JSON.stringify(getMessage(places[p])[0])))
     }
     await bot.push(userSetting[user].id, msg)
   }
