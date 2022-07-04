@@ -6,18 +6,18 @@ const usersPush = async (id, arr) => {
     await users.create({ id, places: [arr] })
     console.log('created');
   } else {
-    const firstSame = JSON.stringify(result.places[0]) == JSON.stringify(arr)
+    const firstSame = JSON.stringify(result.places[1]) == JSON.stringify(arr)
     if (result.places.length > 1) {
       if (firstSame) {
         console.log('same');
       } else {
         console.log('not same');
-        result.places.pop()
-        result.places.unshift(arr)
+        result.places.shift()
+        result.places.push(arr)
       }
     }
     else if (!firstSame) {
-      result.places.unshift(arr)
+      result.places.push(arr)
     }
     console.log('save');
     await result.save()
