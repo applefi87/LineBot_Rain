@@ -104,7 +104,7 @@ bot.listen('/', process.env.PORT || 3000, async () => {
 })
 
 // 每日自動回覆最後2則訊息
-// 不知為何推波時間都是14. 明明設6
+// 志宇說是時區問題? 找到在heroku加env TZ=Asia/Taipei
 schedule.scheduleJob('0 6 * * *', async () => {
   const userSetting = await usersGet()
   for (const user in userSetting) {
