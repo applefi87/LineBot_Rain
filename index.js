@@ -37,26 +37,43 @@ const getAllList = async function () {
 // 將陣列轉加工過的簡訊 (進來已經確定是有對應地區的)
 const getMessage = arr => {
   // 可成功抓單日+顯
-  const ar0 = Number(arr[0])
-  const ar1 = Number(arr[1])
-  const place = allList[ar0]
-  const area = place.areasInfo[ar1]
+  const place = allList[arr[0]]
+  const area = place.areasInfo[arr[1]]
   const dayinfo = area.dayWeather
   // 已經足夠判斷是否地區正確有抓到
   const areaName = area.area
   const test = mode.list([place.areasName, areaName, dayinfo])
-  const daydetail = area.dayWeather[1].summary.result
+  const daydetail = area.dayWeather[0].summary.result
   let largest = 0
+  let thunderstorm = []
   const speak = ['下雨', '易下雨', '一半機率下雨', '不易下雨', '不下雨']
   for (const i in daydetail) {
     let chance = daydetail[i].value[1]
     if (largest < chance) {
       largest = chance
     }
+    // ********新增雷陣雨用表格(之後會加到表單，目前只加在altText裡)********
+    if(i==2&&/陣雨/.test(daydetail[i].value[0])){
+      const weather = daydetail[i].value[0].split("|")
+      for(let w in weather){
+        if(/陣雨/.test(weather[w])){
+          thunderstorm.push([w=="0"?"12~15":"15~18",weather[w]])
+        }
+      }
+    }
   }
+  let altText = `${areaName}${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}` 
+  console.log(thunderstorm.length);
+  if(thunderstorm.length>0){
+    for(let w in thunderstorm){
+      altText+= ","+thunderstorm[w][0]+thunderstorm[w][1]
+    }
+  }
+  // 
+  console.log(altText);
   const box = {
     type: 'flex',
-    altText: `${areaName}今日${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`,
+    altText ,
     contents: {
       type: 'carousel',
       contents: [test]
