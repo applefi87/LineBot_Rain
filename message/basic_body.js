@@ -59,11 +59,11 @@ export default {
                     layout: 'vertical',
                     contents: [
                       {
-                        type: 'image',
-                        url: 'https://www.moedict.tw/%E4%B8%8A%E5%8D%88.png?font=wt064',
-                        aspectMode: 'cover',
-                        size: '70%'
-                      }
+                        type: 'text',
+                        text: '上午',
+                        size: 'xl',
+                        weight: 'bold'
+                      },
                     ],
                     height: '33.3%',
                     justifyContent: 'center',
@@ -75,11 +75,11 @@ export default {
                     layout: 'vertical',
                     contents: [
                       {
-                        type: 'image',
-                        url: 'https://is5-ssl.mzstatic.com/image/thumb/Purple125/v4/a1/d9/24/a1d924b9-3a28-910e-e74e-7d0d9465fdf5/source/512x512bb.jpg',
-                        aspectMode: 'cover',
-                        size: '70%'
-                      }
+                        type: 'text',
+                        text: '下午',
+                        size: 'xl',
+                        weight: 'bold'
+                      },
                     ],
                     height: '33.3%',
                     justifyContent: 'center',
@@ -91,11 +91,11 @@ export default {
                     layout: 'vertical',
                     contents: [
                       {
-                        type: 'image',
-                        url: 'https://en.pimg.jp/048/777/929/1/48777929.jpg',
-                        aspectMode: 'cover',
-                        size: '70%'
-                      }
+                        type: 'text',
+                        text: '晚上',
+                        size: 'xl',
+                        weight: 'bold'
+                      },
                     ],
                     height: '33.3%',
                     justifyContent: 'center',
