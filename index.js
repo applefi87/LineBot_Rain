@@ -3,7 +3,7 @@ import linebot from 'linebot'
 import getData from './getData.js'
 import schedule from 'node-schedule'
 import mode from './mode.js'
-// 儲存最後一次資料用
+// 儲存最後一次資料
 import mongoose from 'mongoose'
 import { usersPush, usersGet } from './controllers/users.js'
 
