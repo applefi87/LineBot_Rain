@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-const interval = 25
+const interval = 13
 const wakeUpDyno = (url) => {
   setInterval(() => {
     try {
