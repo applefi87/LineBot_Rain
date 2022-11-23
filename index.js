@@ -6,13 +6,7 @@ import mode from './mode.js'
 // 儲存最後一次資料
 import mongoose from 'mongoose'
 import { usersPush, usersGet } from './controllers/users.js'
-
-
-// dyno用
-import express from 'express'
-import wakeUpDyno from './wokeDyno.js' // my module!
-import { stringify } from 'querystring'
-import fs from 'fs'
+import wakeUpDyno from './wokeDyno.js'
 
 mongoose.connect(process.env.DB_URL)
 
@@ -53,27 +47,27 @@ const getMessage = arr => {
       largest = chance
     }
     // ********新增雷陣雨用表格(之後會加到表單，目前只加在altText裡)********
-    if(i==2&&/陣雨/.test(daydetail[i].value[0])){
+    if (i == 2 && /陣雨/.test(daydetail[i].value[0])) {
       const weather = daydetail[i].value[0].split("|")
-      for(let w in weather){
-        if(/陣雨/.test(weather[w])){
-          thunderstorm.push([w=="0"?"12~15":"15~18",weather[w]])
+      for (let w in weather) {
+        if (/陣雨/.test(weather[w])) {
+          thunderstorm.push([w == "0" ? "12~15" : "15~18", weather[w]])
         }
       }
     }
   }
-  let altText = `${areaName}${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}` 
+  let altText = `${areaName}${largest >= 80 ? speak[0] : largest >= 60 ? speak[1] : largest === '50' ? speak[2] : largest >= 30 ? speak[3] : speak[4]}`
   console.log(thunderstorm.length);
-  if(thunderstorm.length>0){
-    for(let w in thunderstorm){
-      altText+= ","+thunderstorm[w][0]+thunderstorm[w][1]
+  if (thunderstorm.length > 0) {
+    for (let w in thunderstorm) {
+      altText += "," + thunderstorm[w][0] + thunderstorm[w][1]
     }
   }
   // 
   console.log(altText);
   const box = {
     type: 'flex',
-    altText ,
+    altText,
     contents: {
       type: 'carousel',
       contents: [test]
@@ -91,13 +85,13 @@ bot.on('message', async (e) => {
   try {
     // 先確認傳來訊息格式是否正確
     const text = e.message.text
-   
+
     if (text.length < 5) {
       throw new Error('訊息長度錯誤')
     }
     // 傳的地區去table跟對應出陣列的idx
     const placeIdx = table.findIndex(it => it[0] === text.substr(0, 3))
-    if (placeIdx < 0) {throw new Error('找不到該縣市(不可簡寫)');}
+    if (placeIdx < 0) { throw new Error('找不到該縣市(不可簡寫)'); }
     const detailIdx = table[placeIdx][1].findIndex(it => it === text.substr(3))
     if (detailIdx < 0) throw new Error('找不到該區域')
     const arr = [placeIdx, detailIdx]
@@ -112,12 +106,14 @@ bot.on('message', async (e) => {
   }
 })
 
+
 bot.listen('/', process.env.PORT || 3000, async () => {
   console.log('bot on')
   await getAllList()
   //半夜抓剛好有大清早的資料
   schedule.scheduleJob('48 23 * * *', getAllList)
-  // dyno用
+  // 自動喚醒避免heroku睡眠，我才能半夜抓剛好整天的資料 (上網找的方法)
+  wakeUpDyno(process.env.WAKEUP_URL)
 })
 
 // 每日自動回覆最後2則訊息
@@ -127,16 +123,9 @@ schedule.scheduleJob('0 6 * * *', async () => {
   for (const user in userSetting) {
     let msg = []
     const places = userSetting[user].places
-    for(const p in places){
+    for (const p in places) {
       msg.push(JSON.parse(JSON.stringify(getMessage(places[p])[0])))
     }
     await bot.push(userSetting[user].id, msg)
   }
-})
-
-// 自動喚醒避免heroku睡眠，我才能半夜抓剛好整天的資料 (上網找的方法)
-const app = express()
-
-app.listen(4001, () => {
-  wakeUpDyno('https://linebot--rain.herokuapp.com/') // will start once server starts
 })
